@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="login-bg py-5">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-md-5">
+
+<div class="ai-form-card">
+
+<h3 class="mb-4 text-center">Login</h3>
+
+<form method="POST">
+
+<div class="mb-3">
+<label class="form-label">Username</label>
+<input type="text" name="username" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Password</label>
+<input type="password" name="password" class="form-control" required>
+</div>
+
+<button class="btn btn-primary w-100">Login</button>
+
+</form>
+
+<p class="text-center mt-3">
+Don't have an account?
+<a href="{{ url_for('register') }}">Register</a>
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- AI FEATURE CARDS -->
+<div class="row text-center mt-5">
+
+<div class="col-md-4 mb-4">
+<div class="ai-card">
+<div class="ai-icon">🤖</div>
+<div class="ai-title">AI Detection</div>
+<div class="ai-text">
+Advanced YOLO models detect pollution automatically.
+</div>
+</div>
+</div>
+
+<div class="col-md-4 mb-4">
+<div class="ai-card">
+<div class="ai-icon">🛰️</div>
+<div class="ai-title">Satellite Analysis</div>
+<div class="ai-text">
+Upload satellite imagery for environmental monitoring.
+</div>
+</div>
+</div>
+
+<div class="col-md-4 mb-4">
+<div class="ai-card">
+<div class="ai-icon">🌊</div>
+<div class="ai-title">Ocean Protection</div>
+<div class="ai-text">
+AI helps monitor pollution and protect marine life.
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

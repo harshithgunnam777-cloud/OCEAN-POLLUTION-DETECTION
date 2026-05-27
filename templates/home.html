@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<section class="position-relative text-white d-flex align-items-center" style="min-height:90vh;">
+
+    <img src="{{ url_for('static', filename='images/hero-ocean.jpg') }}"
+         class="position-absolute w-100 h-100"
+         style="object-fit:cover; top:0; left:0; z-index:-2;">
+
+    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.7)); z-index:-1;"></div>
+
+    <div class="container py-5">
+
+        <div class="mb-4">
+            <span class="badge bg-info text-dark px-3 py-2">
+                AI Powered Detection
+            </span>
+        </div>
+
+        <h1 class="display-4 fw-bold mb-4">
+            Protecting Our Oceans <br>
+            <span style="color:#4fd1c5;">Through AI Vision</span>
+        </h1>
+
+        <p class="lead mb-4" style="max-width:600px;">
+            Upload satellite or aerial imagery and let our computer vision system detect
+            oil spills, algal blooms, and plastic waste in real time.
+        </p>
+
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ url_for('upload') }}" class="btn btn-ocean btn-lg">
+                Start Detection →
+            </a>
+
+            <a href="{{ url_for('examples') }}" class="btn btn-outline-light btn-lg">
+                View Examples
+            </a>        
+        </div>
+
+        <div class="row mt-5 g-3">
+
+            <div class="col-md-4">
+                <div class="p-3 hero-card text-center">
+                    <i class="bi bi-droplet-fill fs-3 text-info"></i>
+                    <h6 class="fw-bold mt-2">Oil Spill Detection</h6>
+                    <p class="small text-light opacity-75">
+                        Identify dark patches and oil slicks on water surfaces
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 hero-card text-center">
+                    <i class="bi bi-flower1 fs-3 text-success"></i>
+                    <h6 class="fw-bold mt-2">Algal Bloom Analysis</h6>
+                    <p class="small text-light opacity-75">
+                        Detect harmful green algae concentrations
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 hero-card text-center">
+                    <i class="bi bi-recycle fs-3 text-warning"></i>
+                    <h6 class="fw-bold mt-2">Plastic Waste Mapping</h6>
+                    <p class="small text-light opacity-75">
+                        Locate floating debris and plastic accumulations
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ================= SYSTEM CAPABILITIES ================= -->
+<section class="capabilities-section">
+<div class="container">
+
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">System Capabilities</h2>
+        <p class="text-muted">
+            End-to-end ocean pollution monitoring from image upload to interactive mapping.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Image Upload -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-cloud-arrow-up fs-2 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">Image Upload</h5>
+
+                <p class="small text-muted">
+                    Upload satellite or drone imagery in standard formats for instant analysis.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- YOLO Detection -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-eye fs-2 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">YOLO Detection</h5>
+
+                <p class="small text-muted">
+                    Computer vision powered by YOLO identifies pollution with bounding boxes.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- GPS Extraction -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-location-dot fs-2 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">GPS Extraction</h5>
+
+                <p class="small text-muted">
+                    Automatically extract GPS metadata and pinpoint pollution on maps.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Interactive Maps -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-globe fs-2 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">Interactive Maps</h5>
+
+                <p class="small text-muted">
+                    View detected pollution on interactive maps with location markers.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-chart-column fs-2 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">Dashboard Analytics</h5>
+
+                <p class="small text-muted">
+                    Track detection history with confidence scores and statistics.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- AI Assistant -->
+        <div class="col-md-4">
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+
+                <h5 class="fw-bold">AI Assistant</h5>
+
+                <p class="small text-muted">
+                    Built-in chatbot explains detections and guides users through the system.
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</section>
+<!-- ================= 3D GLOBE ================= -->
+<section class="globe-section text-center">
+    <div class="container">
+
+        <h2 class="mb-5">Global View</h2>
+        <p class="text-muted mb-5">
+            Visual exploration of world in the small globe.
+        </p>
+        <div class="globe-wrapper">
+            <div id="globeContainer"></div>
+        </div>
+        
+
+    </div>
+</section>
+
+
+<!-- ================= SAMPLE RESULTS ================= -->
+<section class="examples-section" id="examples">
+<div class="container">
+
+    <h2 class="text-center mb-4">Sample Detection Results</h2>
+
+    <div class="row g-4">
+
+        <!-- Sample 1 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample1.jpg') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Oil Spill • 80.91</span>
+
+                        <img src="{{ url_for('static', filename='images/sample1_out.jpg') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-0">
+                        Oil Spill Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sample 2 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample2.png') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Algal Bloom • 55.89</span>
+
+                        <img src="{{ url_for('static', filename='images/sample2_out.png') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-6">
+                        Algal Bloom Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sample 3 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample3.jpg') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Plastic Waste • 95.5</span>
+
+                        <img src="{{ url_for('static', filename='images/sample3_out.jpg') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-0">
+                        Plastic Waste Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</section>
+
+
+<!-- ================= GLOBE SCRIPT ================= -->
+<script>
+window.addEventListener("load", function () {
+
+    const container = document.getElementById("globeContainer");
+
+    if (!container || typeof Globe === "undefined") return;
+
+    const globe = Globe()(container)
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+        .backgroundColor('rgba(0,0,0,0)')
+        .showAtmosphere(true)
+        .atmosphereColor('#00b4d8')
+        .atmosphereAltitude(0.15);
+
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.4;
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5">
+
+<h2 class="text-center mb-4">Detection Examples</h2>
+
+<div class="row g-4">
+
+        <!-- Sample 1 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample1.jpg') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Oil Spill • 80.91</span>
+
+                        <img src="{{ url_for('static', filename='images/sample1_out.jpg') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-0">
+                        Oil Spill Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sample 2 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample2.png') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Algal Bloom • 55.89</span>
+
+                        <img src="{{ url_for('static', filename='images/sample2_out.png') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-0">
+                        Algal Bloom Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sample 3 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='images/sample3.jpg') }}"
+                         class="img-fluid rounded mb-2"
+                         style="height:200px; width:100%; object-fit:cover;">
+
+                    <div class="output-wrapper">
+                        <span class="confidence-badge">Plastic Waste • 95.5</span>
+
+                        <img src="{{ url_for('static', filename='images/sample3_out.jpg') }}"
+                             class="img-fluid rounded"
+                             style="height:200px; width:100%; object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="card-body text-center">
+                    <p class="card-text text-muted mb-0">
+                        Plastic Waste Detection Example
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

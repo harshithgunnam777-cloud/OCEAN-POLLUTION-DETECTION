@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-bg">
+
+<div class="container py-5">
+
+<div class="container mb-5">
+
+<div class="row g-4">
+
+<div class="col-md-3">
+<div class="dashboard-card text-center">
+<i class="bi bi-upload"></i>
+<h3>{{ total_uploads }}</h3>
+<p>Total Uploads</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="dashboard-card text-center">
+<i class="bi bi-droplet-fill"></i>
+<h3>{{ oil_spills }}</h3>
+<p>Oil Spills Detected</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="dashboard-card text-center">
+<i class="bi bi-flower1 fs-3 text-success"></i>
+<h3>{{ algal_blooms }}</h3>
+<p>Algal Blooms</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="dashboard-card text-center">
+<i class="bi bi-recycle text-warning"></i>
+<h3>{{ plastic_waste }}</h3>
+<p>plastic waste</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="dashboard-card text-center">
+<i class="bi bi-check-circle-fill text-success"></i>
+<h3>{{ clean_ocean }}</h3>
+<p>Clean Ocean</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="table-view">
+<h2 class="mb-4 text-center">My Uploads</h2>
+<table class="table table-striped table-bordered">
+    <thead class="table-primary">
+        <tr>
+            <th>#</th>
+            <th>Image</th>
+            <th>Pollution Type</th>
+            <th>Result</th>
+            <th>Percent</th>
+            <th>Processed</th>
+            <th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for upload in uploads %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td><img src="{{ url_for('static', filename='uploads/' + upload[1]) }}" width="100"></td>
+            <td>{{ upload[2] }}</td>
+            <td>{{ upload[3] }}</td>
+            <td>{{ upload[5] }}%</td>
+            <td><img src="{{ url_for('static', filename='output/' + upload[4].split('/')[-1]) }}" width="100"></td>
+            <td>
+            <a href="{{ url_for('view_result', upload_id=upload[0]) }}" 
+                class="btn btn-sm btn-primary">
+                View Result
+            </a>
+                {% if upload[6] and upload[7] %}
+                <div id="map{{ loop.index }}" style="height: 100px; width: 150px;"></div>
+                <script>
+                    const map{{ loop.index }} = L.map('map{{ loop.index }}').setView([{{ upload[6] }}, {{ upload[7] }}], 4);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 18,
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map{{ loop.index }});
+                    L.marker([{{ upload[6] }}, {{ upload[7] }}]).addTo(map{{ loop.index }});
+                </script>
+                {% else %}
+                Not available
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="card-view">
+
+{% for upload in uploads %}
+<div class="upload-card mb-3">
+
+    <!-- Top Row -->
+    <div class="d-flex gap-3 align-items-center">
+
+        <!-- Original Image -->
+        <img src="{{ url_for('static', filename='uploads/' + upload[1]) }}" class="upload-img">
+
+        <!-- Info -->
+        <div>
+            <h6>{{ upload[2] }}</h6>
+            <p>{{ upload[3] }}</p>
+            <small>Confidence: {{ upload[5] }}%</small>
+        </div>
+
+    </div>
+
+    <!-- Processed Image -->
+    <div class="mt-2">
+        <img src="{{ url_for('static', filename='output/' + upload[4].split('/')[-1]) }}" class="upload-img-wide">
+    </div>
+
+    <!-- Button -->
+    <div class="mt-2">
+        <a href="{{ url_for('view_result', upload_id=upload[0]) }}" 
+           class="btn btn-sm btn-primary w-100">
+           View Result
+        </a>
+    </div>
+
+    <!-- Map -->
+    {% if upload[6] and upload[7] %}
+    <div class="mt-2" id="map{{ loop.index }}" style="height:150px;"></div>
+
+    <script>
+        const map{{ loop.index }} = L.map('map{{ loop.index }}').setView([{{ upload[6] }}, {{ upload[7] }}], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map{{ loop.index }});
+        L.marker([{{ upload[6] }}, {{ upload[7] }}]).addTo(map{{ loop.index }});
+    </script>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</div>
+{% endblock %}

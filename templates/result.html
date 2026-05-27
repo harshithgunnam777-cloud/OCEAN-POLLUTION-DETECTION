@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4 text-center">Detection Result</h2>
+<div class="row text-center">
+    <div class="col-md-6 mb-3">
+        <h5>Original Image</h5>
+        <img src="{{ original }}" class="img-fluid border rounded">
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <h5>Processed Image</h5>
+
+        <div class="output-wrapper">
+            <span class="confidence-badge">
+                {{ result_text }} • {{ percent }}%
+            </span>
+
+            <img src="{{ processed }}" class="img-fluid border rounded">
+        </div>
+    </div>
+</div>
+
+<h4 class="text-center mt-4">Pollution Location</h4>
+<div id="map" style="height: 400px; width: 100%; border-radius: 10px;"></div>
+<div class="text-center mb-4">
+
+    <h5>{{ result_text }}</h5>
+    <p><strong>Confidence:</strong> {{ percent }}%</p>
+
+    {% if lat and lon %}
+        <p><strong>Latitude:</strong> {{ lat }}</p>
+        <p><strong>Longitude:</strong> {{ lon }}</p>
+        <p><strong>Region:</strong> {{ region }}</p>
+    {% else %}
+        <p><strong>Location:</strong> Not available in image metadata</p>
+    {% endif %}
+
+</div>
+<div class="text-center">
+    <a href="{{ url_for('upload') }}" class="btn btn-primary me-2">Upload Another</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Dashboard</a>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Default coordinates (if no GPS metadata, center somewhere in the ocean)
+    let lat = {{ lat if lat else 0 }};
+    let lon = {{ lon if lon else 0 }};
+
+    // Initialize the map
+    const map = L.map('map').setView([lat, lon], 2); // zoom 2 = global
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add marker if coordinates available
+    if(lat && lon){
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(`
+        	<b>Pollution Detected</b><br>
+                Type: {{ result_text }}<br>
+                Confidence: {{ percent }}%<br>
+                Region: {{ region }}
+            `)
+           .openPopup();
+    }
+</script>
+<script>
+window.addEventListener("load", function () {
+    const title = document.querySelector("h2.mb-4");
+    if (title) {
+        title.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+});
+</script>
+{% endblock %}
+
