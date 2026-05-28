@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Guardian</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<style>
+    /* Floating Chatbot */
+    #chatbot-btn {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 1000;
+        background: #0F2A44;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #chatbot-window {
+        display: none;
+        position: fixed;
+        bottom: 95px;
+        right: 25px;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        z-index: 1000;
+        flex-direction: column;
+    }
+    #chatbot-window header {
+        background: #0F2A44;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    #chatbot-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        font-size: 14px;
+    }
+    #chatbot-input {
+        border: none;
+        border-top: 1px solid #ccc;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    
+    /* ===== AI Loading Overlay ===== */
+    #loadingOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 42, 68, 0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .loading-box {
+        background: white;
+        padding: 28px 36px;
+        border-radius: 14px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    /* ===== Globe container safety ===== */
+    #globeContainer {
+        width: 100%;
+        height: 420px;
+        margin: 0 auto;
+    }
+
+    /* Navbar shadow on scroll */
+    .navbar-shadow {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        transition: box-shadow 0.3s ease;
+    }
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 60vh !important;
+            padding: 20px;
+        }
+
+        #globeContainer {
+            height: 320px;
+        }
+    }
+
+    /* Footer */
+    footer {
+        background: #0d6efd;
+        color: white;
+        padding: 15px 0;
+        text-align: center;
+        margin-top: 50px;
+    }
+    /* ===== CLEAN PROFESSIONAL LOOK ===== */
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #F5F7FA;
+        color: #1F2937;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: 'Poppins', sans-serif;
+    }
+    /* Navbar professional color */
+    .custom-navbar {
+        background: #0F2A44 !important;
+    }
+
+    /* Footer professional color */
+    footer {
+        background: #0F2A44;
+        color: white;
+    }
+    /* ===== Detection Badge ===== */
+    .output-wrapper {
+        position: relative;
+    }
+
+    .confidence-badge {
+        position: absolute;
+    	top: 10px;
+    	left: 10px;
+    	background: rgba(15, 42, 68, 0.9);
+    	color: #fff;
+    	padding: 4px 10px;
+    	font-size: 12px;
+    	border-radius: 6px;
+    	font-weight: 500;
+     }
+
+    /* ===== Smooth fade-in ===== */
+    .fade-in {
+        animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+       }
+    }
+    /* ===== Feature Card Polish ===== */
+    .feature-card {
+        border-radius: 14px;
+        transition: 0.25s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+    }
+</style>
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar navbar-shadow">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center"
+href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" 
+                height="80" 
+                class="me-2">
+
+            <span class="fw-bold">Ocean Guardian</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if session.get('username') %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('upload') }}">Upload</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container mt-4">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+<!-- Footer -->
+<footer>
+    <!-- Footer -->
+
+<footer class="bg-dark text-light py-4 mt-5">
+  <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+
+```
+<!-- Logo -->
+<div class="d-flex align-items-center gap-2">
+  🌊
+  <strong>Ocean Guardian</strong>
+</div>
+
+<!-- Description -->
+<p class="small text-light opacity-75 text-center m-0">
+  AI-powered ocean pollution detection system. Protecting marine ecosystems through computer vision.
+</p>
+
+<!-- Copyright -->
+<p class="small text-light opacity-50 m-0">
+  © 2026 Ocean Guardian
+</p>
+```
+
+  </div>
+</footer>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function showLoading() {
+    const overlay = document.getElementById("loadingOverlay");
+    if (overlay) overlay.style.display = "flex";
+}
+</script>
+
+<!-- AI Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="loading-box">
+        <div class="spinner-border text-primary mb-3"></div>
+        <div><strong>Analyzing satellite image...</strong></div>
+    </div>
+</div>
+
+
+
+<!-- Chatbot -->
+<button id="chatbot-btn">💬</button>
+<div id="chatbot-window">
+    <header>Ocean Guardian Bot</header>
+    <div id="chatbot-messages">
+        <div>Hello! I can guide you about using this website.</div>
+    </div>
+    <input id="chatbot-input" type="text" placeholder="Type your question...">
+</div>
+
+<script>
+const btn = document.getElementById('chatbot-btn');
+const win = document.getElementById('chatbot-window');
+const input = document.getElementById('chatbot-input');
+const messages = document.getElementById('chatbot-messages');
+
+btn.addEventListener('click', () => {
+    win.style.display = win.style.display === 'block' ? 'none' : 'block';
+});
+
+input.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const userMsg = input.value.trim().toLowerCase();
+        if (!userMsg) return;
+        const div = document.createElement('div');
+        div.innerHTML = `<strong>You:</strong> ${userMsg}`;
+        messages.appendChild(div);
+        input.value = '';
+
+        // BOT RESPONSE
+        const botDiv = document.createElement('div');
+
+        // ================= NAVIGATION =================
+        if(userMsg.includes("upload") || userMsg.includes("how to upload")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Go to 'Upload Image', choose your image, and click detect.";
+        }
+        else if(userMsg.includes("website") || userMsg.includes("how to use")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This website allows you to upload ocean images and detect pollution using AI.";
+        }
+        else if(userMsg.includes("project") || userMsg.includes("ocean guardian")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Ocean Guardian is an AI-based system that detects ocean pollution using satellite imagery.";
+        }
+
+        // ================= AI / MODEL =================
+        else if(userMsg.includes("yolo")){
+            botDiv.innerHTML = "<strong>Bot:</strong> YOLO is a real-time object detection algorithm used to identify pollution areas.";
+        }
+        else if(userMsg.includes("how does detection") || userMsg.includes("detection work")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The system analyzes images using computer vision and highlights polluted regions.";
+        }
+        else if(userMsg.includes("technology") || userMsg.includes("model")){
+            botDiv.innerHTML = "<strong>Bot:</strong> We use YOLO-based deep learning for pollution detection.";
+        }
+        else if(userMsg.includes("accuracy")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Accuracy depends on training data, but the model performs well on known pollution types.";
+        }
+
+        // ================= POLLUTION =================
+        else if(userMsg.includes("types") || userMsg.includes("what pollution")){
+            botDiv.innerHTML = "<strong>Bot:</strong> We detect oil spills, algal blooms, and plastic waste.";
+        }
+        else if(userMsg.includes("oil")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Oil spills appear as dark patches on water and are detected using AI.";
+        }
+        else if(userMsg.includes("algal")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Algal blooms are green patches caused by excessive algae growth.";
+        }
+        else if(userMsg.includes("plastic")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Plastic waste appears as floating debris and is detected in ocean surfaces.";
+        }
+
+        // ================= DASHBOARD =================
+        else if(userMsg.includes("dashboard")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Dashboard shows all your uploaded images and detection results.";
+        }
+        else if(userMsg.includes("history") || userMsg.includes("previous")){
+            botDiv.innerHTML = "<strong>Bot:</strong> You can view all previous uploads in the dashboard.";
+        }
+        else if(userMsg.includes("confidence") || userMsg.includes("percentage")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Confidence shows how sure the AI is about the detected pollution.";
+        }
+
+        // ================= ADVANCED =================
+        else if(userMsg.includes("real time")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This system can be extended for real-time satellite monitoring.";
+        }
+        else if(userMsg.includes("government or public") || userMsg.includes("useful")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Yes, it can help environmental agencies monitor ocean pollution.";
+        }
+        else if(userMsg.includes("environment")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This system helps protect marine ecosystems by detecting pollution early.";
+        }
+        else if(userMsg.includes("app work") || userMsg.includes("how app works")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This app uses AI (YOLO) to analyze uploaded ocean images and detect pollution like oil spills, algal blooms, and plastic waste. It highlights polluted areas and shows results with confidence percentage.";
+        }
+        
+        // ================= USER HELP =================
+        else if(userMsg.includes("what image should i upload")){
+            botDiv.innerHTML = "<strong>Bot:</strong> You can upload satellite, drone, or ocean images. Clear images give better detection results.";
+        }
+        else if(userMsg.includes("format") || userMsg.includes("file type")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Supported formats are JPG and PNG images.";
+        }
+        else if(userMsg.includes("mobile photos")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Yes, you can upload mobile photos, but satellite images give more accurate results.";
+        }
+        else if(userMsg.includes("internet")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Yes, internet is required to run the system and process images.";
+        }
+
+// ================= DETECTION PROCESS =================
+        else if(userMsg.includes("what happens after upload")){
+            botDiv.innerHTML = "<strong>Bot:</strong> After uploading, the AI analyzes the image and highlights polluted areas with confidence percentage.";
+        }
+        else if(userMsg.includes("how long") || userMsg.includes("time taken")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Detection usually takes a few seconds depending on image size.";
+        }
+        else if(userMsg.includes("slow")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Detection may be slow if the image is large or system performance is low.";
+        }
+        else if(userMsg.includes("no pollution")){
+            botDiv.innerHTML = "<strong>Bot:</strong> If no pollution is detected, the system shows 'Clean Ocean'.";
+        }
+
+// ================= MODEL LIMITATIONS =================
+        else if(userMsg.includes("limitations")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The system may not be fully accurate if image quality is poor or unclear.";
+        }
+        else if(userMsg.includes("100 percent") || userMsg.includes("accuracy")){
+            botDiv.innerHTML = "<strong>Bot:</strong> No AI system is 100% accurate. Results depend on training data and image quality.";
+        }
+        else if(userMsg.includes("mistake") || userMsg.includes("wrong detection")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Wrong detection can happen due to low-quality images or unfamiliar patterns.";
+        }
+
+// ================= REAL WORLD USE =================
+        else if(userMsg.includes("who can use")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Students, researchers, and environmental agencies can use this system.";
+        }
+        else if(userMsg.includes("industries")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Industries and marine organizations can use this for pollution monitoring.";
+        }
+        else if(userMsg.includes("clean ocean")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This system helps identify pollution so that cleanup actions can be taken.";
+        }
+
+// ================= OUTPUT / RESULT =================
+        else if(userMsg.includes("red") || userMsg.includes("highlight")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The highlighted red area shows detected pollution regions.";
+        }
+        else if(userMsg.includes("processed image")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The processed image shows pollution detection results with highlighted areas.";
+        }
+        else if(userMsg.includes("two images")){
+            botDiv.innerHTML = "<strong>Bot:</strong> One is the original image, and the other shows detected pollution.";
+        }
+
+// ================= TECHNICAL =================
+        else if(userMsg.includes("deep learning")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Yes, this system uses deep learning techniques for image analysis.";
+        }
+        else if(userMsg.includes("computer vision")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This project is based on computer vision, which allows machines to     understand images.";
+        }
+        else if(userMsg.includes("dataset")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The model is trained on ocean pollution datasets including oil spills and plastic waste.";
+        }
+        else if(userMsg.includes("training")){
+            botDiv.innerHTML = "<strong>Bot:</strong> The model is trained using labeled images of polluted and clean ocean data.";
+        }
+
+// ================= FEATURES =================
+        else if(userMsg.includes("features") || userMsg.includes("what can this do")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This system supports image upload, pollution detection, map visualization, and dashboard tracking.";
+        }
+        else if(userMsg.includes("benefits")){
+            botDiv.innerHTML = "<strong>Bot:</strong> It helps detect pollution early and supports environmental protection.";
+        }
+
+// ================= FUTURE =================
+        else if(userMsg.includes("future")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Future improvements include real-time satellite monitoring and higher accuracy models.";
+        }
+        else if(userMsg.includes("real time")){
+            botDiv.innerHTML = "<strong>Bot:</strong> This system can be extended to real-time pollution monitoring using live satellite data.";
+        }
+        else if(userMsg.includes("global")){
+            botDiv.innerHTML = "<strong>Bot:</strong> Yes, this system can be scaled globally for ocean monitoring.";
+        }
+
+        // ================= DEFAULT =================
+        else{
+            botDiv.innerHTML = "<strong>Bot:</strong> Ask about upload, AI detection, pollution types, or dashboard.";
+        }
+
+        messages.appendChild(botDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+});
+</script>

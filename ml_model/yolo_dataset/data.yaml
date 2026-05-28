@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['algal', 'oil spill', 'plastic watse']
+
+roboflow:
+  workspace: ocean-pollution-detection-qlj7j
+  project: ocean-pollution-detection-klfzf
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/ocean-pollution-detection-qlj7j/ocean-pollution-detection-klfzf/dataset/5

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="upload-bg">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="ai-upload-card">
+
+<h3 class="text-center mb-4">Upload Satellite Image</h3>
+
+<form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+
+<div class="mb-3">
+<label class="form-label">Choose Ocean Image</label>
+<input type="file" name="file" class="form-control" required>
+</div>
+
+<button type="submit" class="ai-btn w-100">
+Upload & Detect Pollution
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+    <!-- AI Feature Cards -->
+    <div class="container mt-5">
+        <div class="row text-center">
+
+            <div class="col-md-4">
+                <div class="ai-card">
+                    <div class="ai-icon">⚡</div>
+                    <div class="ai-title">Fast Processing</div>
+                    <div class="ai-text">
+                        Detect pollution within seconds using computer vision.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="ai-card">
+                    <div class="ai-icon">📍</div>
+                    <div class="ai-title">Location Detection</div>
+                    <div class="ai-text">
+                        Extract GPS metadata and map pollution areas.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="ai-card">
+                    <div class="ai-icon">📊</div>
+                    <div class="ai-title">Detection Reports</div>
+                    <div class="ai-text">
+                        View results and analytics in the dashboard.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
